@@ -1,8 +1,8 @@
-import ProductList from "../components/ProductList";
+import Products from "../pages/Products";
 function Home() {
   return (
     <div>
-      <ProductList />
+      <Products />
       <hr />
     </div>
   );

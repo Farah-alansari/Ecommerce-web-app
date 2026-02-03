@@ -1,31 +1,47 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
 import type { RootState } from "../store/store";
 import { removeFromCart, clearCart } from "../store/cartSlice";
-import { useState } from "react";
 
+import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { db } from "../firebase";
 function Cart() {
   const dispatch = useDispatch();
   const items = useSelector((state: RootState) => state.cart.items);
 
   const [checkedOut, setCheckedOut] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
   const totalPrice = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
 
-  const handleCheckout = () => {
-    dispatch(clearCart());
-    setCheckedOut(true);
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
+
+      await addDoc(collection(db, "orders"), {
+        items: items,
+        totalItems: totalItems,
+        totalPrice: totalPrice,
+        createdAt: Timestamp.now(),
+      });
+
+      dispatch(clearCart());
+      setCheckedOut(true);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to place order");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (checkedOut) {
-    return (
-      <h2 style={{ color: "green" }}>
-        ✅ Checkout successful! Your cart has been cleared.
-      </h2>
-    );
+    return <h2 style={{ color: "green" }}>✅ Order placed successfully!</h2>;
   }
 
   if (items.length === 0) {
@@ -33,7 +49,7 @@ function Cart() {
   }
 
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <h2>🛒 Shopping Cart</h2>
 
       {items.map((item) => (
@@ -41,33 +57,17 @@ function Cart() {
           key={item.id}
           style={{
             border: "1px solid #ccc",
-            marginBottom: "10px",
             padding: "10px",
-            display: "flex",
-            gap: "10px",
+            marginBottom: "10px",
           }}
         >
-          <img
-            src={item.image}
-            alt={item.title}
-            width={80}
-            onError={(e) =>
-              ((e.target as HTMLImageElement).src =
-                "https://via.placeholder.com/80")
-            }
-          />
+          <h4>{item.title}</h4>
+          <p>Price: ${item.price}</p>
+          <p>Quantity: {item.quantity}</p>
 
-          <div>
-            <p>
-              <strong>{item.title}</strong>
-            </p>
-            <p>Price: ${item.price}</p>
-            <p>Quantity: {item.quantity}</p>
-
-            <button onClick={() => dispatch(removeFromCart(item.id))}>
-              ❌ Remove
-            </button>
-          </div>
+          <button onClick={() => dispatch(removeFromCart(item.id))}>
+            ❌ Remove
+          </button>
         </div>
       ))}
 
@@ -82,16 +82,10 @@ function Cart() {
 
       <button
         onClick={handleCheckout}
-        style={{
-          marginTop: "15px",
-          padding: "10px 20px",
-          backgroundColor: "green",
-          color: "white",
-          border: "none",
-          cursor: "pointer",
-        }}
+        disabled={loading}
+        style={{ marginTop: "10px" }}
       >
-        ✅ Checkout
+        {loading ? "Processing..." : "✅ Checkout"}
       </button>
     </div>
   );
