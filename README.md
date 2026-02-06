@@ -35,4 +35,4 @@ This project is a simple e-commerce web application built with React and Firebas
 
 Farah Alansari
 
-updated Feb 3,2026
+updated Feb 3,2026..
