@@ -1,38 +1,28 @@
-# E-Commerce React App
+# React E-Commerce App – CI/CD Project
 
-This project is a simple e-commerce web application built with React and Firebase.
+This project demonstrates Test-Driven Development (TDD) and CI/CD using GitHub Actions and Vercel.
 
 ## Features
 
-- Display products from Firebase Firestore
-- User authentication (Register / Login / Logout)
-- Add products to shopping cart
-- Remove items from cart
-- Checkout and create orders
-- Save orders to Firestore
-- View order history for logged-in users
+- Product listing
+- Add to cart functionality
+- Cart updates dynamically
+- Firebase authentication
 
-## Technologies Used
+## Testing
 
-- React
-- TypeScript
-- Redux Toolkit
-- React Router
-- Firebase Authentication
-- Firebase Firestore
+- Unit tests for Navbar and Cart components
+- Integration test to ensure cart updates when adding a product
+- Built using Jest and React Testing Library
 
-## How to Run the Project
+## CI/CD
 
-1. npm install
-2. npm run dev
+- GitHub Actions workflow runs on every push to the main branch
+- Automatically installs dependencies
+- Runs tests
+- Builds the project
+- Deploys to Vercel only if tests pass
 
-## Notes
+## Deployment
 
-- This project is for learning purposes.
-- No real payment gateway is implemented.
-
-## Author
-
-Farah Alansari
-
-updated Feb 3,2026..
+The application is deployed automatically to Vercel after successful CI checks.
